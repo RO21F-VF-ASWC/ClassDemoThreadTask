@@ -13,11 +13,11 @@ namespace ClassDemoThreadTask
         {
             //ThreadTest.StartThreadTest();
 
-            Task.Run(() => DoWork("Number One"));
-            Task.Run(() => DoWork("Number Two"));
+            //Task.Run(() => DoWork("Number One"));
+            //Task.Run(() => DoWork("Number Two"));
 
-            //CriticalRegionTest critRegion = new CriticalRegionTest();
-            //critRegion.Start();
+            CriticalRegionTest critRegion = new CriticalRegionTest();
+            critRegion.Start();
 
 
         }

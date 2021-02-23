@@ -9,9 +9,19 @@ namespace ClassDemoThreadTask
 {
     public class CriticalRegionTest
     {
+        // løsning 1
+        private object lockObj = new object();
+
+        // løsning 2
+        private Mutex mutex = new Mutex();
+
+        //løsning 3
+        private Semaphore sem = new Semaphore(1,1);
+
         
-        
+        // shared resource
         private List<int> _primes;
+
         public CriticalRegionTest()
         {
             _primes = new List<int>();
@@ -29,7 +39,7 @@ namespace ClassDemoThreadTask
                 FindPrimes(1000000);
             }
 
-            sw.Start();
+            sw.Stop();
             Console.WriteLine($"Time is " + sw.Elapsed);
         }
 
@@ -40,13 +50,27 @@ namespace ClassDemoThreadTask
                 if (IsPrime(i))
                 {
                     // enter critical region
-                    
 
+                    // løsning 1
+                    //lock (lockObj)
+                    //{// kun en tråd ad gangen herinde
+                    //    _primes.Add(i);
+                    //}
+
+
+                    // løsning 2
+                    //mutex.WaitOne();
+                    //_primes.Add(i);
+                    //mutex.ReleaseMutex();
+
+
+                    // løsning 3
+                    sem.WaitOne();
                     _primes.Add(i);
-                    
+                    sem.Release();
 
                     // leave critical region 
-                    
+
                 }
             }
         }
@@ -67,10 +91,10 @@ namespace ClassDemoThreadTask
         {
             _primes.Clear();
             int middle = upper / 2;
-            Task t1 = Task.Run(() => FindPrimesInInterval(2, upper));
-            //Task t2 = Task.Run(() => FindPrimesInInterval(middle + 1, upper));
+            Task t1 = Task.Run(() => FindPrimesInInterval(2, middle));
+            Task t2 = Task.Run(() => FindPrimesInInterval(middle + 1, upper));
             t1.Wait();
-            //t2.Wait();
+            t2.Wait();
             string text = $"Found {_primes.Count} primes in [2; {upper}]";
             Console.WriteLine(text);
         }
